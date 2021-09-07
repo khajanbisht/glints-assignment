@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tigervnc-deploy
+  labels:
+    app: tigervnc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: tigervnc
+  template:
+    metadata:
+      labels:
+        name: tigervnc
+    spec:
+      containers:
+      - image: khajan/tigervnc
+        name: tigervnc-container
+        command: ["sh", "-c"]
+        args:
+            - service ssh restart && vncserver -SecurityTypes None,TLSNone -localhost no --I-KNOW-THIS-IS-INSECURE -fg 
+        ports:
+            - containerPort: 5901
+        resources:
+          limits:
+            cpu: "0.7"
+            memory: 1Gi
+          requests:
+            cpu: "0.7"
+            memory: 500Mi
+      restartPolicy: Always

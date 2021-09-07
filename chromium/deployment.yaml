@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromium-headless-deploy
+  labels:
+    app: chromium
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: chromium
+  template:
+    metadata:
+      labels:
+        name: chromium
+    spec:
+      containers:
+      - args:
+        - --remote-debugging-address=0.0.0.0
+        - --remote-debugging-port=9222
+        - --headless
+        - --disable-gpu
+        - https://coldstorage.com.sg/
+        image: khajan/chromium
+        name: chrome-container
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 400Mi
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+        - mountPath: /home/chrome
+          name: chrome
+      restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      volumes:
+      - emptyDir: {}
+        name: tmp
+      - emptyDir: {}
+        name: chrome
